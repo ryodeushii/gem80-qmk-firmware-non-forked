@@ -71,8 +71,16 @@ led_t host_keyboard_led_state(void) {
     return (led_t)host_keyboard_leds();
 }
 
+extern void uart_send_report_func(void);        
+extern void uart_send_mouse_report(void);       
+extern void uart_send_consumer_report(void);    
+extern void uart_send_system_report(void);      
+
 /* send report */
 void host_keyboard_send(report_keyboard_t *report) {
+    
+    uart_send_report_func(); 
+
 #ifdef BLUETOOTH_ENABLE
     if (where_to_send() == OUTPUT_BLUETOOTH) {
         bluetooth_send_keyboard(report);
@@ -107,6 +115,9 @@ void host_keyboard_send(report_keyboard_t *report) {
 }
 
 void host_mouse_send(report_mouse_t *report) {
+     
+    uart_send_mouse_report();
+
 #ifdef BLUETOOTH_ENABLE
     if (where_to_send() == OUTPUT_BLUETOOTH) {
         bluetooth_send_mouse(report);
@@ -130,6 +141,8 @@ void host_system_send(uint16_t usage) {
     if (usage == last_system_usage) return;
     last_system_usage = usage;
 
+    uart_send_system_report();
+
     if (!driver) return;
 
     report_extra_t report = {
@@ -142,6 +155,8 @@ void host_system_send(uint16_t usage) {
 void host_consumer_send(uint16_t usage) {
     if (usage == last_consumer_usage) return;
     last_consumer_usage = usage;
+    
+    uart_send_consumer_report(); 
 
 #ifdef BLUETOOTH_ENABLE
     if (where_to_send() == OUTPUT_BLUETOOTH) {

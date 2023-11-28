@@ -12,7 +12,7 @@
         "mousekey": true,
         "extrakey": true,
         "console": true,
-        "command": true,
+        "command": false,
         "nkro": true,
         "key_lock": true,
         "rgb_matrix": true

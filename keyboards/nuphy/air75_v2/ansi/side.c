@@ -1,15 +1,33 @@
-// Copyright 2023 Persama (@Persama)
-// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+Copyright 2023 @ Nuphy <https://nuphy.com/>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "ansi.h"
 #include "side_table.h"
 
-#define SIDE_BRIGHT_MAX 4
-#define SIDE_SPEED_MAX 4
-#define SIDE_COLOUR_MAX 8
+#define SIDE_BRIGHT_MAX     4
+#define SIDE_SPEED_MAX      4
+#define SIDE_COLOUR_MAX     8
 
-#define RF_LED_LINK_PERIOD 500
-#define RF_LED_PAIR_PERIOD 250
+#define SIDE_LINE           6
+#define SIDE_LED_NUM        12
+
+#define RF_LED_LINK_PERIOD  500
+#define RF_LED_PAIR_PERIOD  250
+
 
 /* side rgb mode */
 enum {
@@ -20,17 +38,16 @@ enum {
     SIDE_OFF,
 };
 
-uint8_t side_mode       = 0;
-uint8_t side_light      = 3;
-uint8_t side_speed      = 2;
-uint8_t side_rgb        = 1;
-uint8_t side_colour     = 0;
-uint8_t side_play_point = 0;
-
-uint8_t  side_play_cnt   = 0;
-uint32_t side_play_timer = 0;
-
+uint8_t side_mode           = 0;
+uint8_t side_light          = 3;
+uint8_t side_speed          = 2;
+uint8_t side_rgb            = 1;
+uint8_t side_colour         = 0;
+uint8_t side_play_point     = 0;
+uint8_t side_play_cnt       = 0;
+uint32_t side_play_timer    = 0;
 uint8_t r_temp, g_temp, b_temp;
+LED_TYPE side_leds[SIDE_LED_NUM] = {0};
 
 const uint8_t side_speed_table[5][5] = {
     [SIDE_WAVE]   = {10, 14, 20, 28, 38}, //
@@ -49,7 +66,6 @@ const uint8_t side_light_table[6] = {
     106, //
 };
 
-#define SIDE_LINE 6
 const uint8_t side_led_index_tab[SIDE_LINE][2] = {
     {5, 6},  //
     {4, 7},  //
@@ -59,9 +75,6 @@ const uint8_t side_led_index_tab[SIDE_LINE][2] = {
     {0, 11}, //
 };
 
-#define SIDE_LED_NUM 12
-LED_TYPE side_leds[SIDE_LED_NUM] = {0};
-
 extern DEV_INFO_STRUCT dev_info;
 extern user_config_t   user_config;
 extern uint8_t         rf_blink_cnt;
@@ -69,7 +82,6 @@ extern uint16_t        rf_link_show_time;
 extern bool            f_bat_hold;
 extern bool            f_sys_show;
 extern bool            f_sleep_show;
-extern bool            f_dev_sleep_enable;
 
 void side_ws2812_setleds(LED_TYPE *ledarray, uint16_t leds);
 void rgb_matrix_update_pwm_buffers(void);
@@ -259,7 +271,7 @@ void sleep_sw_led_show(void) {
     }
 
     if (sleep_show_flag) {
-        if (f_dev_sleep_enable) {
+        if (user_config.sleep_enable) {
             r_temp = 0x00;
             g_temp = 0x80;
             b_temp = 0x00;
@@ -538,6 +550,55 @@ void rf_led_show(void) {
 }
 
 /**
+ * @brief  bat_num_led.
+ */
+void bat_num_led(uint8_t bat_percent)
+{
+    uint8_t r, g, b;
+
+    // set color
+    if (bat_percent <= 15) {
+        r = 0xff; g = 0x00; b = 0x00;
+    }
+    else if (bat_percent <= 50) {
+        r = 0xff; g = 0x40; b = 0x00;
+    }
+    else if (bat_percent <= 80) {
+        r = 0xff; g = 0xff; b = 0x00;
+    }
+    else {
+        r = 0x00; g = 0xff; b = 0x00;
+    }
+
+    // set percent
+    if (bat_percent >= 1) rgb_matrix_set_color(29, r, g, b);
+    if (bat_percent > 10) rgb_matrix_set_color(28, r, g, b);
+    if (bat_percent > 20) rgb_matrix_set_color(27, r, g, b);
+    if (bat_percent > 30) rgb_matrix_set_color(26, r, g, b);
+    if (bat_percent > 40) rgb_matrix_set_color(25, r, g, b);
+    if (bat_percent > 50) rgb_matrix_set_color(24, r, g, b);
+    if (bat_percent > 60) rgb_matrix_set_color(23, r, g, b);
+    if (bat_percent > 70) rgb_matrix_set_color(22, r, g, b);
+    if (bat_percent > 80) rgb_matrix_set_color(21, r, g, b);
+    if (bat_percent > 90) rgb_matrix_set_color(20, r, g, b);
+}
+
+void num_led_show(void)
+{
+    static uint8_t num_bat_temp         = 0;
+    num_bat_temp         = dev_info.rf_baterry;
+    bat_num_led(num_bat_temp);
+}
+
+void bat_led_close(void)
+{
+    for(int i=20; i<=29; i++) {
+        rgb_matrix_set_color(i,0,0,0);
+    }
+
+}
+
+/**
  * @brief  bat_percent_led.
  */
 void bat_percent_led(uint8_t bat_percent) {
@@ -654,11 +715,13 @@ void bat_led_show(void) {
  * @brief  device_reset_show.
  */
 void device_reset_show(void) {
+
     writePinHigh(DC_BOOST_PIN);
     setPinOutput(DRIVER_SIDE_CS_PIN);
     setPinOutput(DRIVER_LED_CS_PIN);
     writePinLow(DRIVER_SIDE_CS_PIN);
     writePinLow(DRIVER_LED_CS_PIN);
+
     for (int blink_cnt = 0; blink_cnt < 3; blink_cnt++) {
         rgb_matrix_set_color_all(0x10, 0x10, 0x10);
         set_left_rgb(0x40, 0x40, 0x40);
@@ -703,7 +766,71 @@ void device_reset_init(void) {
     user_config.ee_side_speed           = side_speed;
     user_config.ee_side_rgb             = side_rgb;
     user_config.ee_side_colour          = side_colour;
+    user_config.sleep_enable            = true;
     eeconfig_update_user_datablock(&user_config);
+}
+
+/**
+ *      RGB test
+*/
+void rgb_test_show(void)
+{
+    // open power control
+    writePinHigh(DC_BOOST_PIN);
+    setPinOutput(DRIVER_LED_CS_PIN);
+    writePinLow(DRIVER_LED_CS_PIN);
+    setPinOutput(DRIVER_SIDE_CS_PIN);
+    writePinLow(DRIVER_SIDE_CS_PIN);
+
+    // set test color
+    rgb_matrix_set_color_all(0xFF, 0x00, 0x00);
+    rgb_matrix_update_pwm_buffers();
+    set_left_rgb(0xff, 0x00, 0x00);
+    set_right_rgb(0xff, 0x00, 0x00);
+    side_rgb_refresh();
+    wait_ms(500);
+
+    rgb_matrix_set_color_all(0x00, 0xFF, 0x00);
+    rgb_matrix_update_pwm_buffers();
+    set_left_rgb(0x00, 0xFF, 0x00);
+    set_right_rgb(0x00, 0xFF, 0x00);
+    side_rgb_refresh();
+    wait_ms(500);
+
+    rgb_matrix_set_color_all(0x00, 0x00, 0xFF);
+    rgb_matrix_update_pwm_buffers();
+    set_left_rgb(0x00, 0x00, 0xFF);
+    set_right_rgb(0x00, 0x00, 0xFF);
+    side_rgb_refresh();
+    wait_ms(500);
+
+    rgb_matrix_set_color_all(0x80, 0x80, 0x80);
+    rgb_matrix_update_pwm_buffers();
+    set_left_rgb(0x80, 0x80, 0x80);
+    set_right_rgb(0x80, 0x80, 0x80);
+    side_rgb_refresh();
+    wait_ms(500);
+
+    rgb_matrix_set_color_all(0x80, 0x80, 0x00);
+    rgb_matrix_update_pwm_buffers();
+    set_left_rgb(0x80, 0x80, 0x00);
+    set_right_rgb(0x80, 0x80, 0x00);
+    side_rgb_refresh();
+    wait_ms(500);
+
+    rgb_matrix_set_color_all(0x80, 0x00, 0x80);
+    rgb_matrix_update_pwm_buffers();
+    set_left_rgb(0x80, 0x00, 0x80);
+    set_right_rgb(0x80, 0x00, 0x80);
+    side_rgb_refresh();
+    wait_ms(500);
+
+    rgb_matrix_set_color_all(0x00, 0x80, 0x80);
+    rgb_matrix_update_pwm_buffers();
+    set_left_rgb(0x00, 0x80, 0x80);
+    set_right_rgb(0x00, 0x80, 0x80);
+    side_rgb_refresh();
+    wait_ms(500);
 }
 
 /**
@@ -740,7 +867,7 @@ void side_led_show(void) {
     sys_led_show();
     rf_led_show();
 
-    if (timer_elapsed32(side_refresh_time) > 20) {
+    if (timer_elapsed32(side_refresh_time) > 30) {
         side_refresh_time = timer_read32();
         side_rgb_refresh();
     }

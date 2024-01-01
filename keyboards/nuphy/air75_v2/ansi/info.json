@@ -4,7 +4,7 @@
     "usb":{
         "vid": "0x19F5",
         "pid": "0x3245",
-        "device_version": "0.0.1",
+        "device_version": "0.0.2",
         "no_startup_check": true
     },
     "features": {
@@ -91,7 +91,6 @@
             {"matrix": [0, 14], "x": 150, "y": 0, "flags": 4},
 
             {"matrix": [1, 16], "x": 150, "y": 10, "flags": 4},
-            {"matrix": [1, 13], "x": 130, "y": 10, "flags": 4},
             {"matrix": [1, 13], "x": 130, "y": 10, "flags": 4},
             {"matrix": [1, 12], "x": 120, "y": 10, "flags": 4},
             {"matrix": [1, 11], "x": 110, "y": 10, "flags": 4},

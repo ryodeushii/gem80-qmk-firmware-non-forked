@@ -181,10 +181,10 @@ void uart_send_report_func(void)
         memcpy(bytekb_report_buf, keyboard_report->raw, 8);
         uart_send_report(CMD_RPT_BYTE_KB, bytekb_report_buf, 8);
     }
-    else if ((dev_info.sys_sw_state == SYS_SW_WIN) && (memcmp(bitkb_report_buf, &keyboard_report->nkro.mods, 16))) {
+    else if ((dev_info.sys_sw_state == SYS_SW_WIN) && (memcmp(bitkb_report_buf, &keyboard_report->nkro.mods, KEYBOARD_REPORT_BITS+1))) {
         no_act_time = 0;
-        uart_auto_nkey_send(bitkb_report_buf, &keyboard_report->nkro.mods, 16);
-        memcpy(&bitkb_report_buf[0], &keyboard_report->nkro.mods, 16);
+        uart_auto_nkey_send(bitkb_report_buf, &keyboard_report->nkro.mods, KEYBOARD_REPORT_BITS+1);
+        memcpy(&bitkb_report_buf[0], &keyboard_report->nkro.mods, KEYBOARD_REPORT_BITS+1);
     }
     else if (timer_elapsed32(interval_timer) > 100) {
         interval_timer = timer_read32();

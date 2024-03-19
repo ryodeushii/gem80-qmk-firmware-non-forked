@@ -142,16 +142,8 @@
 		"title": "Mac Console"
 	},
 	{
-		"name": "Mac\nDnt",
-		"title": "Mac Dnt"
-	},
-	{
-		"name": "Print\nWhole",
-		"title": "PrintWhole"
-	},
-	{
-		"name": "Print\nArea",
-		"title": "PrintArea"
+		"name": "Mac\nDND",
+		"title": "Mac DND"
 	},
     {
 		"name": "Win\nlock",

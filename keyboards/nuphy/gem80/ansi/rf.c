@@ -285,7 +285,8 @@ void uart_send_report_func(void)
         memcpy(bytekb_report_buf, keyboard_report->raw, 8);
         uart_send_report(CMD_RPT_BYTE_KB, bytekb_report_buf, 8);
     }
-    else if ((dev_info.sys_sw_state == SYS_SW_WIN) && (memcmp(bitkb_report_buf, &keyboard_report->nkro.mods, KEYBOARD_REPORT_BITS+1))) {
+    // FIXME: somewhere here is the mess, why NKRO can't be disabled
+    else if ((dev_info.sys_sw_state == SYS_SW_WIN) && (memcmp(bitkb_report_buf, &keyboard_report->nkro.mods, KEYBOARD_REPORT_BITS + 1))) {
         no_act_time = 0;
         uart_auto_nkey_send(bitkb_report_buf, &keyboard_report->nkro.mods, KEYBOARD_REPORT_BITS+1);
         memcpy(&bitkb_report_buf[0], &keyboard_report->nkro.mods, KEYBOARD_REPORT_BITS+1);
@@ -347,8 +348,8 @@ void uart_send_system_report(void)
 uint8_t uart_send_cmd(uint8_t cmd, uint8_t wait_ack, uint8_t delayms)
 {
     uint8_t i;
-
-    wait_ms(delayms);
+    // FIXME: possible (fix)! of double keystrokes
+    // wait_ms(delayms);
 
     memset(&Usart_Mgr.TXDBuf[0], 0, UART_MAX_LEN);
 

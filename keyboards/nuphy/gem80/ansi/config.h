@@ -32,4 +32,4 @@
 #define RGB_DEFAULT_COLOUR          168
 #define RGB_DISABLE_WHEN_USB_SUSPENDED
 
-
+#define DEBOUNCE                    7

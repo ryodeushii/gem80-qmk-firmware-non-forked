@@ -27,7 +27,6 @@ extern uint16_t        rf_link_timeout;
 extern uint16_t        no_act_time;
 extern bool            f_goto_sleep;
 extern bool            f_wakeup_prepare;
-extern bool            flush_side_leds;
 extern uint16_t        sleep_time_delay;
 
 void set_side_rgb(uint8_t r, uint8_t g, uint8_t b);
@@ -52,7 +51,7 @@ void deep_sleep_handle(void) {
     // Change any LED's state so the LED driver flushes after turning on for solid colours.
     // Without doing this, the WS2812 driver wouldn't flush as the previous state is the same as current.
     rgb_matrix_set_color_all(0, 0, 0);
-    flush_side_leds = true;
+    side_rgb_refresh();
     no_act_time = 0; // required to not cause an immediate sleep on first wake
 }
 

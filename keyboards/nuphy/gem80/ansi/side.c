@@ -7,6 +7,7 @@
 #define SIDE_WAVE_2         1
 #define SIDE_MIX            2
 #define SIDE_STATIC         3
+
 #define SIDE_BREATH         4
 #define SIDE_OFF            5
 #define LIGHT_COLOUR_MAX    8
@@ -18,6 +19,7 @@
 #define CHARGING_SHIFT      0
 #define RFLINK_SHIFT        0
 #define CHARGING_BREATHE    1
+
 #define RFLINK_BLINK        1
 #define LOW_BAT_BLINK_PRIOD 500
 #define SIDE_LED_NUM        12
@@ -32,6 +34,7 @@ const uint8_t side_speed_table[6][5] = {
 };
 
 const uint8_t side_light_table[6] = {
+
     0,
     22,
     34,
@@ -44,28 +47,32 @@ const uint8_t side_led_index_tab[SIDE_LINE] = {
     0,
     1,
     2,
+
     3,
     4,
 };
 
 
+
 bool f_charging = 1;
 
-bool    flush_side_leds = false;
 uint8_t side_mode           = 0;
+
 uint8_t side_light          = 3;
 uint8_t side_speed          = 2;
 uint8_t side_rgb            = 1;
 uint8_t side_colour         = 0;
 uint8_t side_play_point     = 0;
+
 uint8_t low_bat_blink_cnt   = 6;
 uint8_t side_play_cnt       = 0;
+
 uint32_t side_play_timer    = 0;
 
 uint8_t r_temp, g_temp, b_temp;
 extern DEV_INFO_STRUCT dev_info;
-extern user_config_t   user_config;
 extern bool         f_bat_hold;
+
 extern bool         f_sleep_show;
 extern bool         f_dial_sw_init_ok;
 extern uint8_t      logo_mode;
@@ -79,8 +86,8 @@ extern uint16_t     rf_link_show_time;
 extern uint8_t      logo_play_cnt;
 extern uint32_t     logo_play_timer;
 
-rgb_led_t side_leds[SIDE_LED_NUM] = {0};
-void side_ws2812_setleds(rgb_led_t *ledarray, uint16_t leds);
+RGB side_leds[SIDE_LED_NUM] = {0};
+void side_ws2812_setleds(RGB *ledarray, uint16_t leds);
 void rgb_matrix_update_pwm_buffers(void);
 void m_logo_led_show(void);
 
@@ -98,6 +105,7 @@ void side_rgb_set_color(int index, uint8_t red, uint8_t green, uint8_t blue)
 
 /**
  * @brief  refresh side leds.
+
  */
 void side_rgb_refresh(void)
 {
@@ -105,9 +113,11 @@ void side_rgb_refresh(void)
 }
 
 
+
 /**
  * @brief  Adjusting the brightness of side lights.
  * @param  dir: 0 - decrease, 1 - increase.
+
  * @note  save to eeprom.
  */
 void light_level_control(uint8_t brighten)
@@ -118,8 +128,10 @@ void light_level_control(uint8_t brighten)
             return;
         } else
             side_light++;
+
     } else
     {
+
         if (side_light == 0) {
             return;
         } else
@@ -127,9 +139,12 @@ void light_level_control(uint8_t brighten)
     }
     user_config.ee_side_light = side_light;
     eeconfig_update_kb_datablock(&user_config);
+
 }
 
+
 /**
+
  * @brief  Adjusting the speed of side lights.
  * @param  dir: 0 - decrease, 1 - increase.
  * @note  save to eeprom.
@@ -153,6 +168,7 @@ void light_speed_contol(uint8_t fast)
  * @param  dir: 0 - prev, 1 - next.
  * @note  save to eeprom.
  */
+
 void side_colour_control(uint8_t dir)
 {
     if ((side_mode != SIDE_WAVE_1)&&(side_mode != SIDE_WAVE_2)){
@@ -164,19 +180,24 @@ void side_colour_control(uint8_t dir)
 
     if (dir) {
         if (side_rgb) {
+
             side_rgb    = 0;
+
             side_colour = 0;
+
         } else {
             side_colour++;
             if (side_colour >= LIGHT_COLOUR_MAX) {
                 side_rgb    = 1;
                 side_colour = 0;
             }
+
         }
     } else {
         if (side_rgb) {
             side_rgb    = 0;
             side_colour = LIGHT_COLOUR_MAX - 1;
+
         } else {
             side_colour--;
             if (side_colour >= LIGHT_COLOUR_MAX) {
@@ -203,12 +224,15 @@ void side_mode_control(uint8_t dir)
             side_mode = 0;
         }
     } else {
+
         if (side_mode > 0) {
             side_mode--;
+
         } else {
             side_mode = SIDE_OFF;
         }
     }
+
     side_play_point          = 0;
     user_config.ee_side_mode = side_mode;
     eeconfig_update_kb_datablock(&user_config);
@@ -217,10 +241,13 @@ void side_mode_control(uint8_t dir)
 /**
  * @brief  set left side leds.
  * @param  ...
+
  */
 void set_side_rgb(uint8_t r, uint8_t g, uint8_t b)
 {
+
     for (int i = 0; i < SIDE_LINE; i++)
+
         side_rgb_set_color(i, r >> 2, g >> 2, b >> 2);
 }
 
@@ -228,6 +255,7 @@ void set_side_rgb(uint8_t r, uint8_t g, uint8_t b)
  * @brief  set left side leds.
  */
 void sys_sw_led_show(void)
+
 {
     static uint32_t sys_show_timer = 0;
     static bool sys_show_flag      = false;
@@ -236,6 +264,7 @@ void sys_sw_led_show(void)
     if (f_sys_show) {
         f_sys_show     = false;
         sys_show_timer = timer_read32();
+
         sys_show_flag  = true;
     }
 
@@ -243,6 +272,7 @@ void sys_sw_led_show(void)
         if (dev_info.sys_sw_state == SYS_SW_MAC) {
             r_temp = 0x80;
             g_temp = 0x80;
+
             b_temp = 0x80;
         } else {
             r_temp = 0x00;
@@ -258,23 +288,29 @@ void sys_sw_led_show(void)
             #if(WORK_MODE == USB_MODE)
             if(timer_elapsed32(sys_show_timer) <= 4000)  set_side_rgb(r_temp, g_temp, b_temp);
             else sys_show_flag = false;
+
             #else
             sys_show_flag = false;
             #endif
         }
     }
+
 }
 
+
 /**
+
  * @brief  sleep_sw_led_show.
  */
 void sleep_sw_led_show(void)
+
 {
     static uint32_t sleep_show_timer = 0;
     static bool sleep_show_flag      = false;
 
     if (f_sleep_show) {
         f_sleep_show     = false;
+
         sleep_show_timer = timer_read32();
         sleep_show_flag  = true;
     }
@@ -285,6 +321,7 @@ void sleep_sw_led_show(void)
             g_temp = 0x80;
             b_temp = 0x00;
         } else {
+
             r_temp = 0x80;
             g_temp = 0x00;
             b_temp = 0x00;
@@ -293,8 +330,10 @@ void sleep_sw_led_show(void)
             set_side_rgb(r_temp, g_temp, b_temp);
         } else {
             set_side_rgb(0x00, 0x00, 0x00);
+
         }
         if (timer_elapsed32(sleep_show_timer) >= (3000-50)) {
+
             sleep_show_flag = false;
         }
     }
@@ -307,12 +346,14 @@ void sys_led_show(void) {
     if (dev_info.link_mode == LINK_USB) {
         if (host_keyboard_led_state().caps_lock) {
             set_side_rgb(0X00, 0x80, 0x80);
+
         }
     }
 
     else {
         if (dev_info.rf_led & 0x02) {
             set_side_rgb(0X00, 0x80, 0x80);
+
         }
     }
 }
@@ -324,9 +365,11 @@ void sys_led_show(void) {
  * @param len:
  * @param point:
  */
+
 static void light_point_playing(uint8_t trend, uint8_t step, uint8_t len, uint8_t *point)
 {
     if (trend) {
+
         *point += step;
         if (*point >= len) *point -= len;
     } else {
@@ -338,15 +381,18 @@ static void light_point_playing(uint8_t trend, uint8_t step, uint8_t len, uint8_
 /**
  * @brief  count_rgb_light.
  * @param light_temp:
+
  */
 static void count_rgb_light(uint8_t light_temp) {
     uint16_t temp;
+
 
     temp   = (light_temp)*r_temp + r_temp;
     r_temp = temp >> 8;
 
     temp   = (light_temp)*g_temp + g_temp;
     g_temp = temp >> 8;
+
 
     temp   = (light_temp)*b_temp + b_temp;
     b_temp = temp >> 8;
@@ -369,11 +415,13 @@ static void side_wave_mode_show_1(void)
     //------------------------------
     if (side_rgb)
         light_point_playing(0, 1, FLOW_COLOUR_TAB_LEN, &side_play_point);
+
     else
         light_point_playing(0, 2, WAVE_TAB_LEN, &side_play_point);
 
     play_index = side_play_point;
     for (int i = 0; i < SIDE_LINE; i++) {
+
         if (side_rgb) {
             r_temp = flow_rainbow_colour_tab[play_index][0];
             g_temp = flow_rainbow_colour_tab[play_index][1];
@@ -385,9 +433,11 @@ static void side_wave_mode_show_1(void)
             g_temp = colour_lib[side_colour][1];
             b_temp = colour_lib[side_colour][2];
 
+
             light_point_playing(1, 12, WAVE_TAB_LEN, &play_index);
             count_rgb_light(wave_data_tab[play_index]);
         }
+
 
         count_rgb_light(side_light_table[side_light]);
 
@@ -399,10 +449,13 @@ static void side_wave_mode_show_2(void)
 {
     uint8_t play_index;
     static uint8_t breathe = 0;
+
     uint8_t breath_temp;
+
 
     //------------------------------
     if (side_play_cnt <= (side_speed_table[side_mode][side_speed]))
+
         return;
     else
         side_play_cnt -= side_speed_table[side_mode][side_speed];
@@ -418,36 +471,45 @@ static void side_wave_mode_show_2(void)
 
     breath_temp =  breathe;
     play_index = side_play_point;
+
     for (int i = 0; i < SIDE_LINE; i++) {
         if (side_rgb) {
             r_temp = flow_rainbow_colour_tab[play_index][0];
             g_temp = flow_rainbow_colour_tab[play_index][1];
             b_temp = flow_rainbow_colour_tab[play_index][2];
 
+
             light_point_playing(1, 16, FLOW_COLOUR_TAB_LEN, &play_index);
+
 
             light_point_playing(1, 32, SIDE_WAVE_TAB_LEN, &breath_temp);
             count_rgb_light(side_wave_data_tab[breath_temp]);
 
         } else {
             r_temp = colour_lib[side_colour][0];
+
             g_temp = colour_lib[side_colour][1];
             b_temp = colour_lib[side_colour][2];
 
             light_point_playing(1, 24, SIDE_WAVE_TAB_LEN, &play_index);
+
             count_rgb_light(side_wave_data_tab[play_index]);
         }
 
         count_rgb_light(side_light_table[side_light]);
         side_rgb_set_color(side_led_index_tab[i], r_temp, g_temp, b_temp);
     }
+
 }
 
+
 /**
+
  * @brief  side_spectrum_mode_show.
  */
 static void side_spectrum_mode_show(void)
 {
+
     if (side_play_cnt <= side_speed_table[side_mode][side_speed])
         return;
     else
@@ -458,6 +520,7 @@ static void side_spectrum_mode_show(void)
 
     r_temp = flow_rainbow_colour_tab[side_play_point][0];
     g_temp = flow_rainbow_colour_tab[side_play_point][1];
+
     b_temp = flow_rainbow_colour_tab[side_play_point][2];
 
     count_rgb_light(side_light_table[side_light]);
@@ -482,20 +545,24 @@ static void side_breathe_mode_show(void)
 
     light_point_playing(0, 1, BREATHE_TAB_LEN, &play_point);
 
+
     if (0) {
         if (play_point == 0) {
             if (++side_play_point >= LIGHT_COLOUR_MAX)
                 side_play_point = 0;
         }
 
+
         r_temp = colour_lib[side_play_point][0];
         g_temp = colour_lib[side_play_point][1];
         b_temp = colour_lib[side_play_point][2];
+
     } else {
         r_temp = colour_lib[side_colour][0];
         g_temp = colour_lib[side_colour][1];
         b_temp = colour_lib[side_colour][2];
     }
+
 
     count_rgb_light(breathe_data_tab[play_point]);
     count_rgb_light(side_light_table[side_light]);
@@ -507,6 +574,7 @@ static void side_breathe_mode_show(void)
 
 /**
  * @brief  side_static_mode_show.
+
  */
 static void side_static_mode_show(void)
 {
@@ -521,6 +589,7 @@ static void side_static_mode_show(void)
     if (side_play_point >= SIDE_COLOUR_MAX) side_play_point = 0;
 
     for (int i = 0; i < SIDE_LINE; i++) {
+
         if (0) {
             r_temp = flow_rainbow_colour_tab[16 * i][0];
             g_temp = flow_rainbow_colour_tab[16 * i][1];
@@ -530,6 +599,7 @@ static void side_static_mode_show(void)
         {
             r_temp = colour_lib[side_colour][0];
             g_temp = colour_lib[side_colour][1];
+
             b_temp = colour_lib[side_colour][2];
         }
 
@@ -543,6 +613,7 @@ static void side_static_mode_show(void)
  * @brief  side_off_mode_show.
  */
 static void side_off_mode_show(void)
+
 {
     if (side_play_cnt <= side_speed_table[side_mode][side_speed])
         return;
@@ -552,6 +623,7 @@ static void side_off_mode_show(void)
 
     r_temp = 0x00;
     g_temp = 0x00;
+
     b_temp = 0x00;
 
     for (int i = 0; i < SIDE_LINE; i++) {
@@ -562,18 +634,23 @@ static void side_off_mode_show(void)
 
 void bat_charging_breathe(void)
 {
+
     static uint32_t interval_timer = 0;
     static uint8_t play_point = 0;
 
     if (timer_elapsed32(interval_timer) > 10) {
+
         interval_timer = timer_read32();
         light_point_playing(0, 1, BREATHE_TAB_LEN, &play_point);
     }
 
+
     r_temp = 0x80; g_temp = 0x40; b_temp = 0x00;
     count_rgb_light(breathe_data_tab[play_point]);
     set_side_rgb(r_temp, g_temp, b_temp);
+
 }
+
 
 
 void bat_charging_design(uint8_t init, uint8_t r, uint8_t g, uint8_t b)
@@ -599,6 +676,7 @@ void bat_charging_design(uint8_t init, uint8_t r, uint8_t g, uint8_t b)
         }
     }
 
+
     for (i = 0; i < SIDE_LINE; i++) {
         if (show_mask & bit_mask) {
             side_rgb_set_color(i, r, g, b);
@@ -615,15 +693,19 @@ void rf_show_blink(void)
     static uint32_t interval_timer = 0;
     uint16_t show_priod;
 
+
     if (rf_blink_cnt) {
         if (dev_info.rf_state == RF_PAIRING)
             show_priod = 250;
+
         else
             show_priod = 500;
+
 
         if (timer_elapsed32(interval_timer) > (show_priod >> 1)) {
             r_temp = 0x00; g_temp = 0x00; b_temp = 0x00;
         }
+
 
         if (timer_elapsed32(interval_timer) >= show_priod) {
             rf_blink_cnt--;
@@ -635,7 +717,9 @@ void rf_show_blink(void)
     }
 
     set_side_rgb(r_temp, g_temp, b_temp);
+
 }
+
 
 void rf_show_design(uint8_t r, uint8_t g, uint8_t b)
 {
@@ -643,6 +727,7 @@ void rf_show_design(uint8_t r, uint8_t g, uint8_t b)
     static uint16_t show_mask      = 0x04;
     uint16_t show_mask_temp        = 0;
     uint16_t show_priod;
+
     uint16_t bit_mask = 1;
     uint8_t i;
 
@@ -669,6 +754,7 @@ void rf_show_design(uint8_t r, uint8_t g, uint8_t b)
             side_rgb_set_color(i, 0x00, 0x00, 0x00);
         }
         bit_mask <<= 1;
+
     }
 }
 
@@ -677,6 +763,7 @@ void rf_show_design(uint8_t r, uint8_t g, uint8_t b)
  */
 void rf_led_show(void)
 {
+
 #if(WORK_MODE == THREE_MODE)
     static bool flag_power_on = 1;
 #endif
@@ -685,6 +772,7 @@ void rf_led_show(void)
         r_temp = 0x00;
         g_temp = 0x80;
         b_temp = 0x00;
+
     } else if (dev_info.link_mode == LINK_USB) {
         r_temp = 0x80;
         g_temp = 0x80;
@@ -693,6 +781,7 @@ void rf_led_show(void)
         if (flag_power_on && (rf_link_show_time < RF_LINK_SHOW_TIME)) return;
 #endif
     } else {
+
         r_temp = 0x00;
         g_temp = 0x00;
         b_temp = 0x80;
@@ -704,8 +793,10 @@ void rf_led_show(void)
     if (rf_blink_cnt) {
         #if (RFLINK_SHIFT)
         rf_show_design(r_temp, g_temp, b_temp);
+
         #else
         rf_show_blink();
+
         #endif
     }
     else if (rf_link_show_time < RF_LINK_SHOW_TIME) {
@@ -713,11 +804,13 @@ void rf_led_show(void)
     }
 }
 
+
 void low_bat_show(void)
 {
     static uint32_t interval_timer = 0;
 
     r_temp = 0x80, g_temp = 0, b_temp = 0;
+
 
     if(low_bat_blink_cnt)
     {
@@ -726,6 +819,7 @@ void low_bat_show(void)
         }
 
         if (timer_elapsed32(interval_timer) >= LOW_BAT_BLINK_PRIOD) {
+
             interval_timer = timer_read32();
             low_bat_blink_cnt--;
         }
@@ -733,6 +827,7 @@ void low_bat_show(void)
 
     set_side_rgb(r_temp, g_temp, b_temp);
 }
+
 
 
 
@@ -752,11 +847,13 @@ void bat_percent_led(uint8_t bat_percent)
         bat_end_led = 1;
         bat_r = 0x80, bat_g = 0x40, bat_b = 0;
     } else if (bat_percent <= 50) {
+
         bat_end_led = 2;
         bat_r = 0x80, bat_g = 0x40, bat_b = 0;
     } else if (bat_percent <= 80) {
         bat_end_led = 3;
         bat_r = 0x80, bat_g = 0x80, bat_b = 0;
+
     } else {
         bat_end_led = 4;
         bat_r = 0, bat_g = 0x80, bat_b = 0;
@@ -770,6 +867,7 @@ void bat_percent_led(uint8_t bat_percent)
         bat_charging_breathe();
         #endif
     }
+
     else if(bat_percent < 10) {
         low_bat_show();
     }
@@ -779,6 +877,7 @@ void bat_percent_led(uint8_t bat_percent)
         for (i = 0; i <= bat_end_led; i++)
             side_rgb_set_color(i, bat_r >> 2, bat_g >> 2, bat_b >> 2);
 
+
         for (; i < SIDE_LINE; i++)
             side_rgb_set_color(i, 0, 0, 0);
     }
@@ -787,9 +886,11 @@ void bat_percent_led(uint8_t bat_percent)
 /**
  * @brief  bat_led_show.
  */
+
 void bat_led_show(void)
 {
     static bool bat_show_flag        = true;
+
     static uint32_t bat_show_time    = 0;
     static uint32_t bat_sts_debounce = 0;
     static uint32_t bat_per_debounce = 0;
@@ -823,21 +924,26 @@ void bat_led_show(void)
             }
             charge_state = dev_info.rf_charge;
         }
+
     }
     else {
         bat_sts_debounce = timer_read32();
         if (timer_elapsed32(bat_show_time) > 5000) {
             bat_show_flag = false;
+
             f_charging = false;
         }
+
         if (charge_state == 0x03) {
             f_charging = true;
         } else if (!(charge_state & 0x01)) {
             f_charging = 0;
+
         }
     }
 
     if (bat_percent != dev_info.rf_battery) {
+
         if (timer_elapsed32(bat_per_debounce) > 1000) {
             bat_percent = dev_info.rf_battery;
         }
@@ -845,11 +951,13 @@ void bat_led_show(void)
     else {
         bat_per_debounce = timer_read32();
 
+
         if ( (bat_percent < 10) && (!(charge_state&0x01))) {
             bat_show_flag = true;
             bat_show_time = timer_read32();
 
             if(rgb_matrix_config.hsv.v > RGB_MATRIX_VAL_STEP) {
+
                 rgb_matrix_config.hsv.v = RGB_MATRIX_VAL_STEP;
             }
 
@@ -858,18 +966,23 @@ void bat_led_show(void)
             }
 
             if(logo_light >1) {
+
                 logo_light = 1;
             }
 
         }
     }
 
+
     if (f_bat_hold || bat_show_flag) {
         bat_percent_led(bat_percent);
     }
+
 }
 
+
 /**
+
  * @brief  device_reset_show.
  */
 void device_reset_show(void)
@@ -877,16 +990,20 @@ void device_reset_show(void)
     writePinHigh(DC_BOOST_PIN);
     setPinOutput(DRIVER_SIDE_CS_PIN);
     setPinOutput(DRIVER_LED_CS_PIN);
+
     writePinLow(DRIVER_SIDE_CS_PIN);
     writePinLow(DRIVER_LED_CS_PIN);
+
     for (int blink_cnt = 0; blink_cnt < 3; blink_cnt++) {
         rgb_matrix_set_color_all(0x10, 0x10, 0x10);
         for (int i = 0; i < SIDE_LED_NUM; i++) {
             side_rgb_set_color(i, 0x10, 0x10, 0x10);
         }
         rgb_matrix_update_pwm_buffers();
+
         side_rgb_refresh();
         wait_ms(200);
+
 
         rgb_matrix_set_color_all(0x00, 0x00, 0x00);
         for (int i = 0; i < SIDE_LED_NUM; i++) {
@@ -895,6 +1012,7 @@ void device_reset_show(void)
         rgb_matrix_update_pwm_buffers();
         side_rgb_refresh();
         wait_ms(200);
+
     }
 }
 
@@ -913,15 +1031,19 @@ void device_reset_init(void)
     side_play_cnt   = 0;
     side_play_timer = timer_read32();
 
+
     logo_mode       = 0;
     logo_light      = 3;
+
     logo_speed      = 2;
     logo_rgb        = 1;
+
     logo_colour     = 0;
     logo_play_point = 0;
 
     logo_play_cnt   = 0;
     logo_play_timer = timer_read32();
+
 
     f_bat_hold = false;
 
@@ -941,8 +1063,10 @@ void device_reset_init(void)
     user_config.ee_logo_speed           = logo_speed;
     user_config.ee_logo_rgb             = logo_rgb;
     user_config.ee_logo_colour          = logo_colour;
+
 #if(WORK_MODE == THREE_MODE)
-    user_config.sleep_enable            = 1;
+    f_dev_sleep_enable                  = 1;
+
 #endif
     eeconfig_update_kb_datablock(&user_config);
 }
@@ -962,6 +1086,7 @@ void rgb_test_show(void)
     rgb_matrix_set_color_all(0x00, 0xFF, 0x00);
     for (int i = 0; i < SIDE_LED_NUM; i++)
     side_rgb_set_color(i, 0x00, 0xFF, 0x00);
+
     rgb_matrix_update_pwm_buffers();
     side_rgb_refresh();
     wait_ms(1000);
@@ -986,20 +1111,24 @@ void side_led_show(void)
         flag_power_on = 0;
     }
 
+
     side_play_cnt += timer_elapsed32(side_play_timer);
     side_play_timer = timer_read32();
 
     switch (side_mode) {
+
         case SIDE_WAVE_1:   side_wave_mode_show_1();    break;
         case SIDE_WAVE_2:   side_wave_mode_show_2();    break;
         case SIDE_MIX:      side_spectrum_mode_show();  break;
         case SIDE_BREATH:   side_breathe_mode_show();   break;
         case SIDE_STATIC:   side_static_mode_show();    break;
         case SIDE_OFF:      side_off_mode_show();       break;
+
     }
 
 #if(WORK_MODE == THREE_MODE)
     bat_led_show();
+
 #endif
     sys_led_show();
     sys_sw_led_show();
@@ -1009,8 +1138,8 @@ void side_led_show(void)
     m_logo_led_show();
 
     if (timer_elapsed32(side_refresh_time) > 50) {
+
         side_refresh_time = timer_read32();
         side_rgb_refresh();
     }
 }
-

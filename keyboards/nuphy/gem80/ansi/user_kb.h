@@ -166,7 +166,6 @@ void    side_colour_control(uint8_t dir);
 void    side_mode_control(uint8_t dir);
 void    side_led_show(void);
 void    sleep_handle(void);
-void    bat_pct_led_kb(void);
 void    update_bat_pct_rgb(void);
 void    rgb_test_show(void);
 void    gpio_init(void);

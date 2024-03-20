@@ -62,6 +62,11 @@ extern uint8_t            side_light;
 extern uint8_t            side_speed;
 extern uint8_t            side_rgb;
 extern uint8_t            side_colour;
+extern uint8_t            logo_mode;
+extern uint8_t            logo_light;
+extern uint8_t            logo_speed;
+extern uint8_t            logo_rgb;
+extern uint8_t            logo_colour;
 
 /**
  * @brief  gpio initial.
@@ -402,6 +407,12 @@ void load_eeprom_data(void) {
         side_speed  = user_config.ee_side_speed;
         side_rgb    = user_config.ee_side_rgb;
         side_colour = user_config.ee_side_colour;
+        logo_mode   = user_config.ee_logo_mode;
+        logo_light  = user_config.ee_logo_light;
+        logo_speed  = user_config.ee_logo_speed;
+        logo_rgb    = user_config.ee_logo_rgb;
+        logo_colour = user_config.ee_logo_colour;
+        f_dev_sleep_enable = user_config.sleep_enable;
     }
 }
 
@@ -410,51 +421,46 @@ void load_eeprom_data(void) {
  */
 void user_config_reset(void) {
     side_mode   = 0;
-    side_light  = 1;
+    side_light  = 3;
     side_speed  = 2;
     side_rgb    = 1;
     side_colour = 0;
+    logo_mode = 0;
+    logo_light = 3;
+    logo_speed = 2;
+    logo_rgb = 1;
+    logo_colour = 0;
 
-    /* first power on, set rgb matrix brightness off */
-    rgb_matrix_sethsv(255, 255, 0);
 
+    rgb_matrix_sethsv(  RGB_DEFAULT_COLOUR,
+                        255,
+                        RGB_MATRIX_MAXIMUM_BRIGHTNESS - RGB_MATRIX_VAL_STEP * 2);
     user_config.default_brightness_flag = 0xA5;
     user_config.ee_side_mode            = side_mode;
     user_config.ee_side_light           = side_light;
     user_config.ee_side_speed           = side_speed;
     user_config.ee_side_rgb             = side_rgb;
     user_config.ee_side_colour          = side_colour;
+
+#if(WORK_MODE == THREE_MODE)
     user_config.sleep_enable            = true;
+    f_dev_sleep_enable = true;
+#else
+    user_config.sleep_enable            = false;
+    f_dev_sleep_enable = false;
+#endif
+
     user_config.rf_link_timeout         = LINK_TIMEOUT_ALT;
+    user_config.ee_logo_mode            = logo_mode;
+    user_config.ee_logo_light           = logo_light;
+    user_config.ee_logo_speed           = logo_speed;
+    user_config.ee_logo_rgb             = logo_rgb;
+    user_config.ee_logo_colour          = logo_colour;
+    // user_config.slf_dev_sleep_enable                  = 1;
+
+
     eeconfig_update_kb_datablock(&user_config);
 }
-
-/**
- * @brief  Show battery percentage LEDs
- */
-void bat_pct_led_kb(void) {
-    uint8_t bat_percent = dev_info.rf_battery;
-
-    if (bat_percent >= 100) {
-        bat_percent = 100;
-    }
-
-    uint8_t led_idx_tens = bat_percent / 10;
-    uint8_t led_idx_ones = bat_percent % 10;
-
-    // set F key for battery percentage tens (e.g, 10%)
-    if (led_idx_tens > 0) {
-        user_set_rgb_color(led_idx_tens, bat_pct_rgb.r, bat_pct_rgb.g, bat_pct_rgb.b);
-    }
-
-    // set number key for battery percentage ones (e.g., 5 in 15%)
-    if (led_idx_ones == 0) {
-        user_set_rgb_color(20, bat_pct_rgb.r, bat_pct_rgb.g, bat_pct_rgb.b);
-    } else {
-        user_set_rgb_color(30 - led_idx_ones, bat_pct_rgb.r, bat_pct_rgb.g, bat_pct_rgb.b);
-    }
-}
-
 /**
  * @brief Updates RGB value for current bat percentage.
  */

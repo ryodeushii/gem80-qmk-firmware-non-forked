@@ -287,18 +287,9 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             } else  unregister_code16(keycode);
             break;
 
-
         case RGB_TEST:
             f_rgb_test_press = record->event.pressed;
             return false;
-
-        // case LINK_TO:
-        //     if (record->event.pressed) {
-        //         uint16_t mask = LINK_TIMEOUT ^ LINK_TIMEOUT_ALT;
-        //         user_config.rf_link_timeout ^= mask; // XOR swap
-        //         eeconfig_update_kb_datablock(&user_config);
-        //     }
-        //     return false;
 
         case SHIFT_GRV:
             if (record->event.pressed) {
@@ -320,10 +311,6 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 bool rgb_matrix_indicators_kb(void) {
     if (!rgb_matrix_indicators_user()) {
         return false;
-    }
-
-    if (f_bat_num_show || f_bat_hold) {
-        bat_pct_led_kb();
     }
 
     if (debug_enable) {

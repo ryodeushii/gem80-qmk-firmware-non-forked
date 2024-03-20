@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 
+#define USB_MODE                            0
+#define THREE_MODE                          1
+#define WORK_MODE                           THREE_MODE
 
-#define USB_MODE                    0
-#define THREE_MODE                  1
-#define WORK_MODE                   THREE_MODE
 
 #define DYNAMIC_KEYMAP_MACRO_DELAY          8
 #define TAP_CODE_DELAY                      8
@@ -35,15 +35,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define NRF_WAKEUP_PIN                      B8
 
 
-#define WS2812_PWM_DRIVER       	PWMD3
-#define WS2812_PWM_CHANNEL      	2
-#define WS2812_PWM_PAL_MODE     	1
-#define WS2812_DMA_STREAM       	STM32_DMA1_STREAM3
-#define WS2812_DMA_CHANNEL      	3
-#define WS2812_PWM_TARGET_PERIOD    800000
+#define WS2812_PWM_DRIVER       	        PWMD3
+#define WS2812_PWM_CHANNEL      	        2
+#define WS2812_PWM_PAL_MODE     	        1
+#define WS2812_DMA_STREAM       	        STM32_DMA1_STREAM3
+#define WS2812_DMA_CHANNEL      	        3
+#define WS2812_PWM_TARGET_PERIOD            800000
 
 
-#define DRIVER_RGB_DI_PIN        	A7
+#define DRIVER_RGB_DI_PIN        	        A7
 #define DRIVER_LED_CS_PIN                   C6
 #define DRIVER_SIDE_PIN                     C8
 #define DRIVER_SIDE_CS_PIN                  C9
@@ -57,7 +57,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define EECONFIG_KB_DATA_SIZE               16  //10 in JC //12 in official  // match used byte size of user_config_t + 1 (seems to need extra byte)
 #define RGB_MATRIX_LED_COUNT                101  //93  // RGB总灯数 (88轴灯+5侧灯)
 
-#define RGB_MATRIX_DEFAULT_MODE     RGB_MATRIX_CUSTOM_position_mode
-#define RGB_DEFAULT_COLOUR          168
+#define RGB_MATRIX_DEFAULT_MODE             RGB_MATRIX_CUSTOM_position_mode
+#define RGB_DEFAULT_COLOUR                  168
+#define RGB_MATRIX_DEFAULT_VAL              255
 
-#define DEBOUNCE 5
+
+#define DEBOUNCE 10

@@ -107,7 +107,7 @@ const uint8_t wave_data_tab[WAVE_TAB_LEN]=
 
 const uint8_t flow_tab_1[][3] =
 {
-    {255,	8,		8},	
+    {255,	8,		8},
 	{255,	255,    8},
 	{8,	    255,    8},
 	{8,	    255,	255},
@@ -117,7 +117,7 @@ const uint8_t flow_tab_1[][3] =
 
 const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 {
-	{255,	8,		8},		
+	{255,	8,		8},
 	{255,	8,		8},
 	{255,	8,		8},
 	{255,	8,		8},
@@ -134,7 +134,7 @@ const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 	{255,	65,		8},
 	{255,	73,		8},
 
- 	{255,	81,		8},		
+ 	{255,	81,		8},
 	{255,	89,		8},
 	{255,	99,		8},
 	{255,	109,	8},
@@ -151,7 +151,7 @@ const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 	{255,	241,	8},
 	{255,	255,	8},
 
-	{248,	255,	8},		
+	{248,	255,	8},
 	{234,	255,	8},
 	{220,	255,	8},
 	{206,	255,	8},
@@ -168,7 +168,7 @@ const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 	{85,	255,	8},
 	{77,	255,	8},
 
- 	{69,	255,	8},		
+ 	{69,	255,	8},
 	{61,	255,	8},
 	{53,	255,	8},
 	{47,	255,	8},
@@ -185,7 +185,7 @@ const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 	{8,		255,	8},
 	{8,		255,	8},
 
-	{8,		255,	8,	},	
+	{8,		255,	8,	},
 	{8,		255,	8,	},
 	{8,		255,	8,	},
 	{8,		255,	8,	},
@@ -202,7 +202,7 @@ const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 	{8,		255,	65,	},
 	{8,		255,	73,	},
 
- 	{8,		255,	81,	},	
+ 	{8,		255,	81,	},
 	{8,		255,	89,	},
 	{8,		255,	99,	},
 	{8,		255,	109,},
@@ -253,7 +253,7 @@ const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 	{8,		8,		255,},
 	{8,		8,		255,},
 
-	{8,		8,		255,},	
+	{8,		8,		255,},
 	{8,		8,		255,},
 	{8,		8,		255,},
 	{8,		8,		255,},
@@ -360,14 +360,15 @@ const uint8_t	flow_rainbow_colour_tab[FLOW_COLOUR_TAB_LEN][3]=
 
 const uint8_t colour_lib[9][3] =
 {
-	{0xff, 0x00, 0x00},		   
-	{0xff, 0x80, 0x00},       
-	{0xff, 0xff, 0x00},       
-	{0x00, 0xff, 0x00},         
-	{0x00, 0xff, 0xff},         
-	{0x00, 0x00, 0xff},         
-	{0x80, 0x00, 0xff},        
-	{0xc0, 0xc0, 0xff},       
-	{0x00, 0x00, 0x00},       
+	{0xff, 0x00, 0x00},
+	{0xff, 0x80, 0x00},
+	{0xff, 0xff, 0x00},
+	{0x00, 0xff, 0x00},
+	{0x00, 0xff, 0xff},
+	{0x00, 0x00, 0xff},
+	{0x80, 0x00, 0xff},
+	{0xc0, 0xc0, 0xff},
+	{0x00, 0x00, 0x00},
 };
+
 

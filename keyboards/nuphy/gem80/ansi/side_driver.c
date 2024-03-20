@@ -73,7 +73,7 @@ void side_sendByte(uint8_t byte)
 }
 
 // Setleds for standard RGB
-void side_ws2812_setleds(LED_TYPE *ledarray, uint16_t leds)
+void side_ws2812_setleds(rgb_led_t *ledarray, uint16_t leds)
 {
     // this code is very time dependent, so we need to disable interrupts
     chSysLock();
@@ -89,3 +89,4 @@ void side_ws2812_setleds(LED_TYPE *ledarray, uint16_t leds)
 
     chSysUnlock();
 }
+

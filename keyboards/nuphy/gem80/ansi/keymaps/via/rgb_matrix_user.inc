@@ -40,10 +40,11 @@ static bool position_mode(effect_params_t* params) {
 
     rgb_matrix_set_color(56, rgb.r, rgb.g, rgb.b);      // J
     rgb_matrix_set_color(59, rgb.r, rgb.g, rgb.b);      // D
-    rgb_matrix_set_color(76, rgb.r, rgb.g, rgb.b);      
+    rgb_matrix_set_color(76, rgb.r, rgb.g, rgb.b);
 
     return rgb_matrix_check_finished_leds(led_max);
 }
 
 
 #endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+

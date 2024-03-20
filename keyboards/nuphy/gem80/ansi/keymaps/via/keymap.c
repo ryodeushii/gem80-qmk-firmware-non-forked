@@ -71,3 +71,4 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	_______,				_______,   	_______,   	_______,  	_______,   	_______,   	_______,	_______, 	LOGO_SPD,	LOGO_SPI,	_______,				_______,				LOGO_VAI,
 	_______,	_______,	_______,										_______, 							_______,	_______,   	MO(5),		_______,				LOGO_MOD,   LOGO_VAD,	LOGO_HUI),
 };
+

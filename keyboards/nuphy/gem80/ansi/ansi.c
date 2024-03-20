@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "user_kb.h"
 #include "ansi.h"
 #include "usb_main.h"
-#include "mcu_pwr.h"
 
 extern bool            f_rf_sw_press;
 extern bool            f_sleep_show;
@@ -308,29 +307,29 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-bool rgb_matrix_indicators_kb(void) {
-    if (!rgb_matrix_indicators_user()) {
-        return false;
-    }
+/* qmk keyboard post init */
+void keyboard_post_init_user(void)
+{
+    m_gpio_init();
+#if(WORK_MODE == THREE_MODE)
+    rf_uart_init();
+    wait_ms(500);
+    rf_device_init();
+#endif
 
-    if (debug_enable) {
-        user_set_rgb_color(56, 0x80, 0x00, 0x00);
-    }
+    break_all_key();
+    load_eeprom_data();
+    dial_sw_scan();
 
-    // light up corresponding BT mode key during connection
-    if (rf_blink_cnt && dev_info.link_mode >= LINK_BT_1 && dev_info.link_mode <= LINK_BT_3) {
-        user_set_rgb_color(33 - dev_info.link_mode, 0, 0, 0x80);
-    }
-
-    // power down unused LEDs
-    led_power_handle();
-
-    return true;
+#if(WORK_MODE == USB_MODE)
+    rf_link_show_time = 0;
+#endif
 }
+
 
 /* qmk keyboard post init */
 void keyboard_post_init_kb(void) {
-    gpio_init();
+    m_gpio_init();
     rf_uart_init();
     wait_ms(500);
     rf_device_init();
@@ -340,6 +339,22 @@ void keyboard_post_init_kb(void) {
     load_eeprom_data();
     keyboard_post_init_user();
 }
+
+bool rgb_matrix_indicators_user(void)
+{
+    return true;
+}
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max)
+{
+    if (keymap_config.no_gui) {
+        rgb_matrix_set_color(16, 0x00, 0x80, 0x00);
+    }
+
+    rgb_matrix_set_color(RGB_MATRIX_LED_COUNT-1, 0, 0, 0);
+    return true;
+}
+
 
 /* qmk housekeeping task */
 void housekeeping_task_kb(void) {
@@ -359,5 +374,5 @@ void housekeeping_task_kb(void) {
 
     side_led_show();
 
-    sleep_handle();
+    Sleep_Handle();
 }

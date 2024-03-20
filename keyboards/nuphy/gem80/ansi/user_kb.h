@@ -101,7 +101,8 @@ typedef enum {
 
 #define LINK_TIMEOUT            (100 * 120)
 #define LINK_TIMEOUT_ALT        (100 * 5)
-#define SLEEP_TIME_DELAY        (100 * 360)
+// #define SLEEP_TIME_DELAY        (6 * 60 *100) // official 6 minutes
+#define SLEEP_TIME_DELAY        (1 * 30 *100)
 #define POWER_DOWN_DELAY        (24)
 
 #define RF_LONG_PRESS_DELAY     30
@@ -168,7 +169,7 @@ void    side_led_show(void);
 void    sleep_handle(void);
 void    update_bat_pct_rgb(void);
 void    rgb_test_show(void);
-void    gpio_init(void);
+void    m_gpio_init(void);
 void    long_press_key(void);
 void    break_all_key(void);
 void    switch_dev_link(uint8_t mode);
@@ -178,6 +179,6 @@ void    timer_pro(void);
 void    load_eeprom_data(void);
 void    user_config_reset(void);
 void    user_set_rgb_color(int index, uint8_t red, uint8_t green, uint8_t blue);
-void    led_power_handle(void);
 uint8_t uart_send_cmd(uint8_t cmd, uint8_t ack_cnt, uint8_t delayms);
 
+void Sleep_Handle(void);

@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SYS_MODE_PIN                        C1
 #define DC_BOOST_PIN                        C2
 #define NRF_RESET_PIN                       B4
-#define NRF_TEST_PIN                        B5
+#define NRF_BOOT_PIN                    	B5
 #define NRF_WAKEUP_PIN                      B8
 
 
